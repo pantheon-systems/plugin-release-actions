@@ -1,8 +1,10 @@
 "use strict";
-const { readFileSync } = require("fs");
-const { resolve } = require("path");
+import { readFileSync } from "fs";
+import { dirname, resolve } from "path";
 
-module.exports = (() => {
+
+export default (() => {
+  const __dirname = dirname(new URL(import.meta.url).pathname);
   // get the args
   const [path] = process.argv.slice(2);
   // throw if necessary args are missing
