@@ -77,7 +77,7 @@ runs:
     - name: Release
       shell: bash
       run: |
-        node ../scripts/get_release_notes.js ./README.MD >> ./release_notes.md
+        node ${{ github.action_path }}/../scripts/get_release_notes.js ./README.MD >> ./release_notes.md
         gh release create $VERSION --title "$VERSION" -F ./release_notes.md $([[ ${{ inputs.draft }} == "true" ]] && echo "--draft")
       env:
         GH_TOKEN: ${{ inputs.gh_token }}
