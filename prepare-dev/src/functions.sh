@@ -43,11 +43,11 @@ process_file(){
     LC_FILE_PATH=$(echo "$FILE" | tr '[:upper:]' '[:lower:]')
 
     echo "Processing file '${FILE}'..."
-    if [[ "$LC_FILE_PATH" == "*/package-lock.json" ]];then
+    if [[ "$LC_FILE_PATH" == *"/package-lock.json" ]];then
         echo_info "skip package-lock [${FILE}]."
         return
     fi
-    if [[  "$LC_FILE_PATH" == "*/package.json" ]]; then
+    if [[  "$LC_FILE_PATH" == *"/package.json" ]]; then
         echo_info "Updating package with 'npm version'"
         npm version "${NEW_DEV_VERSION}" --no-git-tag-version
         git add "$FILE"
@@ -55,7 +55,7 @@ process_file(){
         return
     fi
 
-    if [[ "$LC_FILE_PATH" == "*/composer.json" || "$LC_FILE_PATH" == "*/composer.lock" ]];then
+    if [[ "$LC_FILE_PATH" == *"/composer.json" || "$LC_FILE_PATH" == *"/composer.lock" ]];then
         echo_info "skip composer [${FILE}]."
         return
     fi
