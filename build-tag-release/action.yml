@@ -1,0 +1,75 @@
+name: Build, Tag, and Release
+description: Build the assets and push them to a new tag. Create a release based on the tag.
+
+inputs:
+  draft:
+    description: "Create a draft release instead of a regular release."
+    required: false
+    default: "true"
+  build_node_assets:
+    description: "Build the node assets."
+    required: false
+    default: "false"
+  build_composer_assets:
+    description: "Build the composer assets."
+    required: false
+    default: "false"
+  token:
+    description: "The GitHub token to use for authentication."
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Setup node
+      uses: actions/setup-node@v3
+      with:
+        node-version: "lts"
+        cache: "npm"
+    - name: Build Node Assets
+      if: ${{ inputs.build_node_assets == 'true' }}
+      shell: bash
+      run: |
+        npm ci
+        npm run build
+
+    - name: Build Composer Assets
+      if: ${{ inputs.build_composer_assets == 'true' }}
+      shell: bash
+      run: |
+        composer install --no-dev -o
+
+    - name: Setup
+      shell: bash
+      run: |
+        VERSION=$(cat README.MD| grep 'Stable tag:' | awk '{print $3}')
+        [[ "$VERSION" != "" ]] || exit 1
+        echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+    - name: Commit Assets
+      shell: bash
+      if: ${{ inputs.build_node_assets == 'true' || inputs.build_composer_assets == 'true' }}
+      run: |
+        [[ "$VERSION" != "" ]] || exit 1
+        git config user.name Pantheon Automation
+        git config user.email bot@getpantheon.com
+        git checkout -b "robot-release-$VERSION"
+        [[ ${{ inputs.build_node_assets }} == "true" ]] && git add -f assets/*
+        [[ ${{ inputs.build_composer_assets }} == "true" ]] && git add -f vendor/*
+        git commit -m "Release $VERSION"
+
+    - name: Tag
+      shell: bash
+      run: |
+        echo "Releasing version $VERSION ..."
+        [[ "$VERSION" != "" ]] || exit 1
+        git tag "$VERSION"
+        git push --tags
+
+    - name: Release
+      shell: bash
+      run: |
+        node ../scripts/get_release_notes.js ./README.MD >> ./release_notes.md
+        gh release create $VERSION --title "$VERSION" -F ./release_notes.md $([[ ${{ inputs.draft }} == "true" ]] && echo "--draft")
+      env:
+        GITHUB_TOKEN: ${{ inputs.token }}

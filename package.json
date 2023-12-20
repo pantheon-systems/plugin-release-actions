@@ -1,0 +1,12 @@
+{
+  "name": "plugin-release-actions",
+  "version": "0.1.0",
+	"private": true,
+  "description": "GitHub actions for standardized releases for WP plugins and Drupal modules",
+  "scripts": {
+    "test": "node --test"
+  },
+  "keywords": [],
+  "author": "@pantheon-systems",
+  "license": "LGPL-3.0-or-later"
+}
