@@ -52,6 +52,7 @@ process_file(){
         npm version "${NEW_DEV_VERSION}" --no-git-tag-version
         git add "$FILE"
         git add "$(dirname "$FILE")/package-lock.json"
+        return
     fi
 
     if [[ "$LC_FILE_PATH" == "*/composer.json" || "$LC_FILE_PATH" == "*/composer.lock" ]];then
