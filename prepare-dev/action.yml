@@ -22,11 +22,6 @@ inputs:
 runs:
   using: "composite"
   steps:
-    name: Prepare next dev release
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-      - name: Update Development Branch
-        shell: bash
-        run: bash ${{ github.action_path }}/prepare-dev.sh ${{ inputs.readme_md }}
+    - name: Update Development Branch
+      shell: bash
+      run: bash ${{ github.action_path }}/prepare-dev.sh ${{ inputs.readme_md }}
