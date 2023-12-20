@@ -1,0 +1,32 @@
+name: Prepare Dev Branch
+description: Following a release, prepare the dev branch for development on the next release.
+
+inputs:
+  # All of these should be parameterized but right now are set in the bash script.
+  # release_branch:
+  #   required: false
+  #   default: "release"
+  # development_branch:
+  #   required: false
+  #   default: "main"
+  # git_author_username:
+  #   required: false
+  #   default: "bot@getpantheon.com"
+  # git_author_username:
+  #   required: false
+  #   default: "Pantheon Automation"
+  readme_md: # to avoid case sensitivty issues when getting the current version out of readme
+    required: false
+    default: "README.MD"
+
+runs:
+  using: "composite"
+  steps:
+    name: Prepare next dev release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Update Development Branch
+        shell: bash
+        run: bash ${{ github.action_path }}/prepare-dev.sh ${{ inputs.readme_md }}
