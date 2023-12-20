@@ -18,7 +18,7 @@ const cases = [
   },
 ];
 
-for await (const { name, path, expected } of cases) {
+for (const { name, path, expected } of cases) {
   test(name, async () => {
     process.argv[2] = path;
     const actual = (await import("../get_release_notes.js")).default;
