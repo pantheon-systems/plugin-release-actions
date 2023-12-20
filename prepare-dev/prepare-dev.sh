@@ -54,10 +54,6 @@ main() {
 
     git commit -m "Prepare ${NEW_DEV_VERSION}"
 
-    if [[ -f "package.json" ]]; then
-        npm version "${NEW_DEV_VERSION}" --no-git-tag-version
-    fi
-
     if [[ "${DRY_RUN:-}" == 1 ]]; then
         return
     fi
