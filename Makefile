@@ -4,6 +4,6 @@ test-node:
 test: test-node
 
 lint-shell:
-	shellcheck prepare-dev/*.sh prepare-dev/src/*.sh
+	shellcheck prepare-dev/*.sh src/*.sh release-pr/*.sh
 
 lint: lint-shell

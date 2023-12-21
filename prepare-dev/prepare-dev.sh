@@ -1,6 +1,5 @@
 #!/bin/bash
 set -eou pipefail
-set -x
 IFS=$'\n\t'
 
 if [[ "${DRY_RUN:-}" == 1 ]]; then
@@ -17,7 +16,7 @@ readonly GIT_USER="bot@getpantheon.com"
 readonly GIT_NAME="Pantheon Automation"
 
 # shellcheck disable=SC1091
-source "${SELF_DIRNAME}/src/functions.sh"
+source "${SELF_DIRNAME}/../src/functions.sh"
 
 readonly RELEASE_BRANCH="release"
 readonly DEVELOP_BRANCH="main"

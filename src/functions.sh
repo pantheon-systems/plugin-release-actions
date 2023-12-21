@@ -6,7 +6,7 @@ echo_info(){
 	echo  "[Info] $*" >&2
 }
 
-# echo to stderr with info tag
+# echo to stderr with error tag
 echo_error(){
 	echo  "[Error] $*" >&2
 }
@@ -40,6 +40,7 @@ process_file(){
         return
     fi
     # Convert the filename to lowercase for case-insensitive comparison
+    local LC_FILE_PATH
     LC_FILE_PATH=$(echo "$FILE" | tr '[:upper:]' '[:lower:]')
 
     echo "Processing file '${FILE}'..."
@@ -63,11 +64,15 @@ process_file(){
         echo_info "Alternative readme Processing  [${FILE}]."
         update_readme "${FILE}" "${OLD_VERSION}" "${NEW_VERSION}"
         echo_info "Skip futher readme sed"
-        return
+    else
+        echo "search-and-replace with sed"
+        if [[ ${NEW_VERSION} == *"-dev" ]]; then
+            # if we're going TO a new dev version, don't s/r "@since" in php docs
+            sed -i.tmp -e '/^\s*\* @since/!s/'"${OLD_VERSION}"'/'"${NEW_VERSION}"'/g' "$FILE" && rm "$FILE.tmp"
+        else
+            sed -i.tmp -e "s/${OLD_VERSION}/${NEW_VERSION}/g" "$FILE" && rm "$FILE.tmp"
+        fi
     fi
-
-    echo "search-and-replace with sed"
-    sed -i.tmp -e '/^\s*\* @since/!s/'"${OLD_VERSION}"'/'"${NEW_VERSION}"'/g' "$FILE" && rm "$FILE.tmp"
 
     git add "$FILE"
 }
@@ -82,22 +87,33 @@ update_readme(){
     fi
     
     # Convert the filename to lowercase for case-insensitive comparison
+    local LC_FILE_PATH
     LC_FILE_PATH=$(echo "$FILE_PATH" | tr '[:upper:]' '[:lower:]')
 
-    if [[ "$LC_FILE_PATH" == *.md ]]; then
-        echo_info "markdown search-replace"
-        local new_heading="### ${NEW_VERSION}"
-        local awk_with_target='/## Changelog/ { print; print ""; print heading; next } 1'
+    # handle "prepare dev" one way and "draft PR" another.
+    if [[ ${NEW_VERSION} == *"-dev" ]]; then
+        # if we're going TO -dev, add a new changelog heading
+        if [[ "$LC_FILE_PATH" == *.md ]]; then
+            local new_heading="### ${NEW_VERSION}"
+            local awk_with_target='/## Changelog/ { print; print ""; print heading; next } 1'
+        else
+            local new_heading="= ${NEW_VERSION} ="
+            local awk_with_target='/== Changelog ==/ { print; print ""; print heading; next } 1'
+        fi
+        awk -v heading="$new_heading" "$awk_with_target" "$FILE_PATH" > tmp.md
+        mv tmp.md "$FILE_PATH"
     else
-        echo_info "wp.org txt search-replace"
-        local new_heading="= ${NEW_VERSION} ="
-        local awk_with_target='/== Changelog ==/ { print; print ""; print heading; next } 1'
+        # if we're going FROM -dev, update the changelog.
+        # TODO: do this instead/again as part of release since PR is unlikely to merge right away
+        if [[ "$LC_FILE_PATH" == *.md ]]; then
+            echo_info "updating changelog and adding date to readme.md"
+            sed -i -e "s/= ${OLD_VERSION}/= ${NEW_VERSION} (${TODAYS_DATE})/g" "$FILE"
+        else
+            echo_info "updating changelog and adding date to readme.txt"
+            sed -i -e "s/= ${OLD_VERSION}/= ${NEW_VERSION} (${TODAYS_DATE})/g" "$FILE"
+        fi
     fi
 
-    awk -v heading="$new_heading" "$awk_with_target" "$FILE_PATH" > tmp.md
-    mv tmp.md "$FILE_PATH"
-
+    # Update only the stable tag at the top of the document
     sed -i.tmp -e "s/Stable tag: ${OLD_VERSION}/Stable tag: ${NEW_VERSION}/g" "$FILE_PATH" && rm "$FILE_PATH.tmp"
-
-    git add "$FILE_PATH"
 }

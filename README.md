@@ -1,7 +1,8 @@
 # plugin-release-actions
 GitHub actions for standardized releases for WP plugins and Drupal modules
 
-## Build Tag and Release
+## Actions
+### Build Tag and Release
 This action will build a tag and draft a release for a plugin or module.
 
 To use this action, create a workflow file in your plugin or module repository (e.g. `.github/workflows/release.yml`) with the following contents:
@@ -33,7 +34,7 @@ jobs:
         draft: "false"
 ```
 
-### Inputs
+#### Inputs
 
 | Name | Description | Default |
 | --- | --- | --- |
@@ -43,7 +44,13 @@ jobs:
 | `draft` | Whether to make the release a draft or live | `true` |
 
 
-## Prepare Dev
-This action will update the development branch to be ready for the next release after releasing a new version of a plugin or module.
+### Prepare Dev
+This action will update the development branch to be ready for the next release after releasing a new version of a plugin or module. This action search and replaces the version number across all the top-level files in the repo.
 
+### Release PR
+This action will draft a "ship it" PR to the `release` branch when new features are added to the development branch. This action search and replaces the version number in relevant places across all the top-level files in the repo.
 
+This action expects to make use of the label "automation" on the repo. Create it if it does not already exist.
+
+## Merging Commits
+_TBD explain why features should be squashed and releases must be merged._
