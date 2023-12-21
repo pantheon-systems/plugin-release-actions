@@ -50,7 +50,7 @@ process_file(){
     fi
     if [[  "$LC_FILE_PATH" == *"/package.json" ]]; then
         echo_info "Updating package with 'npm version'"
-        npm version "${NEW_DEV_VERSION}" --no-git-tag-version
+        npm version "${NEW_VERSION}" --no-git-tag-version
         git add "$FILE"
         git add "$(dirname "$FILE")/package-lock.json"
         return
