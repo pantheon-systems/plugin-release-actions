@@ -23,7 +23,7 @@ readonly RELEASE_BRANCH="release"
 readonly DEVELOP_BRANCH="main"
 
 main() {
-    local README_MD="${2:-}"
+    local README_MD="${1:-}"
     if [[ -z "$README_MD" ]]; then
         README_MD=README.MD
     fi
