@@ -46,7 +46,6 @@ main() {
     git push origin "${RELEASE_BRANCH}" --force
 
     # Create a draft PR
-    create_draft_pr RELEASE_MESSAGE
     if gh pr view "${RELEASE_BRANCH}"; then
     	echo_info "PR Already Exists"
     	return
