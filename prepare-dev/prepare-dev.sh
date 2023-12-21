@@ -1,6 +1,5 @@
 #!/bin/bash
 set -eou pipefail
-set -x
 IFS=$'\n\t'
 
 if [[ "${DRY_RUN:-}" == 1 ]]; then
@@ -17,13 +16,13 @@ readonly GIT_USER="bot@getpantheon.com"
 readonly GIT_NAME="Pantheon Automation"
 
 # shellcheck disable=SC1091
-source "${SELF_DIRNAME}/src/functions.sh"
+source "${SELF_DIRNAME}/../src/functions.sh"
 
 readonly RELEASE_BRANCH="release"
 readonly DEVELOP_BRANCH="main"
 
 main() {
-    local README_MD="${2:-}"
+    local README_MD="${1:-}"
     if [[ -z "$README_MD" ]]; then
         README_MD=README.MD
     fi
