@@ -11,6 +11,19 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 See the robots hard at work.
 
+## Actions Used
+
+### Development Workflow
+* [Build/Tag/Release](https://github.com/pantheon-systems/plugin-release-actions/)
+* [Prepare Dev](https://github.com/pantheon-systems/plugin-release-actions/)
+* [Release to WordPress.org](https://github.com/10up/action-wordpress-plugin-deploy) (10up)
+* Prepare Release PR
+
+### Linting and Testing
+* [WordPress.org Code Analysis](https://github.com/pantheon-systems/action-wporg-validator/)
+* [PHP Compatiblity](https://github.com/pantheon-systems/phpcompatibility-action/)
+* [Validate Readme Spacing](https://github.com/pantheon-systems/validate-readme-spacing/)
+
 ## Changelog
 
 ### 0.1.2-dev

@@ -16,7 +16,7 @@ export default (() => {
    * @see {@link https://regex101.com/r/TmzSYI/1} for the regex explanation
    */
   const regex =
-    /(^#{3}\s[\s\d\.-\w]+(\([\w\d\s]+\))?$\n(?<notes>^[\w\d\W][^#]{3,}$\n))/gm;
+    /(?=## Changelog$\n+(?=^#{3}\s[\s\d\.-\w]+(\([\w\d\s]+\))?$\n(?<notes>^[\w\d\W][^#]{3,}$\n)))/gm;
   const matches = fileContent.matchAll(regex);
   const [releaseNotes] = [...matches].map((match) => match.groups.notes.trim());
   console.log(releaseNotes);
