@@ -13,7 +13,7 @@ export default (() => {
   const filePath = resolve(process.cwd(), path);
   const fileContent = readFileSync(filePath, "utf8");
   /**
-   * @see {@link https://regex101.com/r/TmzSYI/1} for the regex explanation
+   * @see {@link https://regex101.com/r/sD5dq5/1} for the regex explanation
    */
   const regex =
     /(?=## Changelog$\n+(?=^#{3}\s[\s\d\.-\w]+(\([\w\d\s]+\))?$\n(?<notes>^[\w\d\W][^#]{3,}$\n)))/gm;
