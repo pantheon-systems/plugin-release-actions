@@ -5,6 +5,12 @@ IFS=$'\n\t'
 # shellcheck disable=SC2155
 readonly SELF_DIRNAME="$(dirname -- "$0")"
 
+# TODO: Parameterize or make case-insensitive when this is an action
+# shellcheck disable=SC2034
+readonly GIT_USER="bot@getpantheon.com"
+# shellcheck disable=SC2034
+readonly GIT_NAME="Pantheon Automation"
+
 # shellcheck disable=SC1091
 source "${SELF_DIRNAME}/../src/functions.sh"
 
