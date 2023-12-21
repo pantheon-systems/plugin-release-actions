@@ -1,0 +1,27 @@
+name: Draft Release PR
+description: Create a PR to the release branch with all new features on the development branch.
+
+inputs:
+  # All of these should be parameterized but right now are set in the bash script.
+  # release_branch:
+  #   required: false
+  #   default: "release"
+  # development_branch:
+  #   required: false
+  #   default: "main"
+  # git_author_username:
+  #   required: false
+  #   default: "bot@getpantheon.com"
+  # git_author_username:
+  #   required: false
+  #   default: "Pantheon Automation"
+  readme_md: # to avoid case sensitivty issues when getting the current version out of readme
+    required: false
+    default: "README.MD"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Draft Release PR
+      shell: bash
+      run: bash ${{ github.action_path }}/release-pr.sh ${{ inputs.readme_md }}
