@@ -105,6 +105,8 @@ update_readme(){
     else
         # if we're going FROM -dev, update the changelog.
         # TODO: do this instead/again as part of release since PR is unlikely to merge right away
+        local TODAYS_DATE
+        TODAYS_DATE=$(todays_date)
         if [[ "$LC_FILE_PATH" == *.md ]]; then
             echo_info "updating changelog and adding date to readme.md"
             sed -i -e "s/= ${OLD_VERSION}/= ${NEW_VERSION} (${TODAYS_DATE})/g" "$FILE"
@@ -116,4 +118,8 @@ update_readme(){
 
     # Update only the stable tag at the top of the document
     sed -i.tmp -e "s/Stable tag: ${OLD_VERSION}/Stable tag: ${NEW_VERSION}/g" "$FILE_PATH" && rm "$FILE_PATH.tmp"
+}
+
+todays_date(){
+    date +"%e %B %Y" | sed -e 's/^[[:space:]]*//'
 }
