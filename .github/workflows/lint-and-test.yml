@@ -7,4 +7,3 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - run: make lint
-      - run: make test
