@@ -25,6 +25,10 @@ inputs:
     description: "The email to use for git commits."
     required: false
     default: "bot@getpantheon.com"
+  readme_md:
+    description: "The readme file name"
+    required: false
+    default: README.md
 
 runs:
   using: "composite"
@@ -50,13 +54,11 @@ runs:
     - name: Setup
       shell: bash
       run: |
-        README=""
-        for file in README.MD README.md readme.md Readme.md; do
-          if [[ -f "$file" ]]; then
-            README="$file"
-            break
-          fi
-        done
+        README="${{ inputs.readme_md }}"
+        if [[ -f "$README" ]]; then
+          echo "No README file found with the name $README. Set the readme_md value if your file is named differently."
+          exit 1
+        fi
         VERSION=$(cat "$README"| grep 'Stable tag:' | awk '{print $3}')
         [[ "$VERSION" != "" ]] || exit 1
         echo "VERSION=$VERSION" >> $GITHUB_ENV
@@ -84,7 +86,7 @@ runs:
     - name: Release
       shell: bash
       run: |
-        node ${{ github.action_path }}/../scripts/get_release_notes.js ./README.MD >> ./release_notes.md
+        node ${{ github.action_path }}/../scripts/get_release_notes.js ./${{ inputs.readme_md }} >> ./release_notes.md
         gh release create $VERSION --title "$VERSION" -F ./release_notes.md $([[ ${{ inputs.draft }} == "true" ]] && echo "--draft")
       env:
         GH_TOKEN: ${{ inputs.gh_token }}
