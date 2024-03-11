@@ -55,7 +55,8 @@ runs:
       shell: bash
       run: |
         README="${{ inputs.readme_md }}"
-        if [[ -f "$README" ]]; then
+        # Make sure a README exists.
+        if [[ ! -f "$README" ]]; then
           echo "No README file found with the name $README. Set the readme_md value if your file is named differently."
           exit 1
         fi
