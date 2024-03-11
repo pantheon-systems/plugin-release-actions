@@ -50,7 +50,14 @@ runs:
     - name: Setup
       shell: bash
       run: |
-        VERSION=$(cat README.MD| grep 'Stable tag:' | awk '{print $3}')
+        README=""
+        for file in README.MD README.md readme.md Readme.md; do
+          if [[ -f "$file" ]]; then
+            README="$file"
+            break
+          fi
+        done
+        VERSION=$(cat "$README"| grep 'Stable tag:' | awk '{print $3}')
         [[ "$VERSION" != "" ]] || exit 1
         echo "VERSION=$VERSION" >> $GITHUB_ENV
 
