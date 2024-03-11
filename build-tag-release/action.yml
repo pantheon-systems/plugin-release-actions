@@ -50,6 +50,7 @@ runs:
     - name: Setup
       shell: bash
       run: |
+        README=""
         for file in README.MD README.md readme.md Readme.md; do
           if [[ -f "$file" ]]; then
             README="$file"
