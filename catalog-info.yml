@@ -1,0 +1,12 @@
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: plugin-release-actions
+  description: Auto-generated catalog info for pantheon-systems/plugin-release-actions
+  annotations:
+    backstage.io/techdocs-ref: dir:docs/
+spec:
+  type: tool
+  lifecycle: experimental
+  owner: site
