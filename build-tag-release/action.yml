@@ -29,6 +29,10 @@ inputs:
     description: "The readme file name"
     required: false
     default: README.md
+  generate_release_notes:
+    description: "Use GitHub's generated release notes"
+    required: false
+    default: false
 
 runs:
   using: "composite"
@@ -82,12 +86,23 @@ runs:
         echo "Releasing version $VERSION ..."
         [[ "$VERSION" != "" ]] || exit 1
         git tag "$VERSION"
-        git push --tags
+        git push origin "$VERSION"
+        sleep 1 # if we generate too quickly on the next step tag may not exist.
 
-    - name: Release
+    # TODO(pwt): Allow pointing this to a file other than readme.md while using readme for canonical version.
+    - name: Release with Readme Release Notes
+      if: ${{ inputs.generate_release_notes == 'false' }}
       shell: bash
       run: |
         node ${{ github.action_path }}/../scripts/get_release_notes.js ./${{ inputs.readme_md }} >> ./release_notes.md
         gh release create $VERSION --title "$VERSION" -F ./release_notes.md $([[ ${{ inputs.draft }} == "true" ]] && echo "--draft")
+      env:
+        GH_TOKEN: ${{ inputs.gh_token }}
+
+    - name: Release with Generated Release Notes
+      if: ${{ inputs.generate_release_notes == 'true' }}
+      shell: bash
+      run: |
+        gh release create $VERSION --title "$VERSION" --generate-notes --verify-tag $([[ ${{ inputs.draft }} == "true" ]] && echo "--draft")
       env:
         GH_TOKEN: ${{ inputs.gh_token }}

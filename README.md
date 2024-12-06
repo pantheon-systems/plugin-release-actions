@@ -31,7 +31,8 @@ jobs:
         gh_token: ${{ secrets.GITHUB_TOKEN }}
         build_node_assets: "true"
         build_composer_assets: "true"
-        draft: "false"
+        generate_release_notes: "true"
+        draft: "true"
 ```
 
 #### Inputs
@@ -42,6 +43,8 @@ jobs:
 | `build_node_assets` | Whether to build node assets | `false` |
 | `build_composer_assets` | Whether to build composer assets | `false` |
 | `draft` | Whether to make the release a draft or live | `true` |
+| `readme_md` | The file name of the readme to source the version number and changelog.| `README.md` |
+| `generate_release_notes` | Generate release notes based on commits instead of parsing README. | `false` |
 
 
 ### Prepare Dev
