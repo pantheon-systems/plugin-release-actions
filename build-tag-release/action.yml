@@ -39,6 +39,7 @@ runs:
   steps:
     - name: Setup node
       uses: actions/setup-node@v3
+      if: ${{ inputs.build_node_assets == 'true' }}
       with:
         node-version: "lts/*"
         cache: "npm"
