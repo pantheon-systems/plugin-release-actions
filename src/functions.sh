@@ -108,8 +108,8 @@ update_readme(){
         local TODAYS_DATE
         TODAYS_DATE=$(todays_date)
         if [[ "$LC_FILE_PATH" == *.md ]]; then
-            echo_info "updating changelog and adding date to readme.md"
-            sed -i -e "s/= ${OLD_VERSION}/= ${NEW_VERSION} (${TODAYS_DATE})/g" "$FILE"
+            echo_info "updating changelog and adding date to readme.md (${FILE})"
+            sed -i -e "s/### ${OLD_VERSION}/### ${NEW_VERSION} (${TODAYS_DATE})/g" "$FILE"
         else
             echo_info "updating changelog and adding date to readme.txt"
             sed -i -e "s/= ${OLD_VERSION}/= ${NEW_VERSION} (${TODAYS_DATE})/g" "$FILE"
@@ -117,7 +117,14 @@ update_readme(){
     fi
 
     # Update only the stable tag at the top of the document
-    sed -i.tmp -e "s/Stable tag: ${OLD_VERSION}/Stable tag: ${NEW_VERSION}/g" "$FILE_PATH" && rm "$FILE_PATH.tmp"
+    awk -v old="${OLD_VERSION}" -v new="${NEW_VERSION}" '
+    {
+        gsub("Stable tag: " old, "Stable tag: " new);
+        gsub("\\*\\*Stable tag:\\*\\* " old, "**Stable tag:** " new);
+        print;
+    }' "$FILE_PATH" > "${FILE_PATH}.tmp" && mv "${FILE_PATH}.tmp" "$FILE_PATH"
+
+
 }
 
 todays_date(){
