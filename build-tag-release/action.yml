@@ -88,7 +88,7 @@ runs:
         [[ "$VERSION" != "" ]] || exit 0
         OLD_VERSION="$VERSION"
         NEW_VERSION="${VERSION}-${GITHUB_SHA::7}"
-        source ${{ github.action_path }}/../scripts/functions.sh
+        source ${{ github.action_path }}/../src/functions.sh
         process_file "${{ inputs.main_plugin_file }}" "$OLD_VERSION" "$NEW_VERSION"
         git add "${{ inputs.main_plugin_file }}"
         echo "VERSION=$NEW_VERSION" >> $GITHUB_ENV
