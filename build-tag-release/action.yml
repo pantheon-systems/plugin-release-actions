@@ -37,6 +37,10 @@ inputs:
     description: "Create a prerelease instead of a regular release."
     required: false
     default: "false"
+  main_plugin_file:
+    description: "The main plugin file to use for prerelease edits."
+    required: false
+    default: ""
 
 runs:
   using: "composite"
@@ -73,6 +77,22 @@ runs:
         [[ "$VERSION" != "" ]] || exit 1
         echo "VERSION=$VERSION" >> $GITHUB_ENV
 
+    - name: Add prerelease details
+      if: ${{ inputs.prerelease == 'true' }}
+      shell: bash
+      run: |
+        if [[ -z "${{ inputs.main_plugin_file }}" ]]; then
+          echo "No main plugin file specified for prerelease edits."
+          exit 0
+        fi
+        [[ "$VERSION" != "" ]] || exit 0
+        OLD_VERSION="$VERSION"
+        NEW_VERSION="${VERSION}-${GITHUB_SHA::7}"
+        source ${{ github.action_path }}/../scripts/functions.sh
+        process_file "${{ inputs.main_plugin_file }}" "$OLD_VERSION" "$NEW_VERSION"
+        git add "${{ inputs.main_plugin_file }}"
+        echo "VERSION=$NEW_VERSION" >> $GITHUB_ENV
+
     - name: Commit Assets
       shell: bash
       if: ${{ inputs.build_node_assets == 'true' || inputs.build_composer_assets == 'true' }}
@@ -84,6 +104,7 @@ runs:
         [[ ${{ inputs.build_node_assets }} == "true" ]] && git add -f assets/*
         [[ ${{ inputs.build_composer_assets }} == "true" ]] && git add -f vendor/*
         git commit -m "Release $VERSION"
+
 
     - name: Tag
       shell: bash
