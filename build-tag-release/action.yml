@@ -33,6 +33,10 @@ inputs:
     description: "Use GitHub's generated release notes"
     required: false
     default: false
+  prerelease:
+    description: "Create a prerelease instead of a regular release."
+    required: false
+    default: "false"
 
 runs:
   using: "composite"
@@ -96,7 +100,7 @@ runs:
       shell: bash
       run: |
         node ${{ github.action_path }}/../scripts/get_release_notes.js ./${{ inputs.readme_md }} >> ./release_notes.md
-        gh release create $VERSION --title "$VERSION" -F ./release_notes.md $([[ ${{ inputs.draft }} == "true" ]] && echo "--draft")
+        gh release create $VERSION --title "$VERSION" -F ./release_notes.md $([[ ${{ inputs.draft }} == "true" ]] && echo "--draft")  $([[ ${{ inputs.prerelease }} == "true" ]] && echo "--prerelease")
       env:
         GH_TOKEN: ${{ inputs.gh_token }}
 
@@ -104,6 +108,6 @@ runs:
       if: ${{ inputs.generate_release_notes == 'true' }}
       shell: bash
       run: |
-        gh release create $VERSION --title "$VERSION" --generate-notes --verify-tag $([[ ${{ inputs.draft }} == "true" ]] && echo "--draft")
+        gh release create $VERSION --title "$VERSION" --generate-notes --verify-tag $([[ ${{ inputs.draft }} == "true" ]] && echo "--draft") $([[ ${{ inputs.prerelease }} == "true" ]] && echo "--prerelease")
       env:
         GH_TOKEN: ${{ inputs.gh_token }}
