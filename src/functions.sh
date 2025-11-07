@@ -93,31 +93,15 @@ update_readme(){
     # handle "prepare dev" one way and "draft PR" another.
     if [[ ${NEW_VERSION} == *"-dev" ]]; then
         # if we're going TO -dev, add a new changelog heading
-        # Check if the file actually has a changelog section that maintains version entries
-        local has_changelog_entries=false
         if [[ "$LC_FILE_PATH" == *.md ]]; then
-            # Check if there are any ### version entries after ## Changelog
-            if grep -A 10 "^## Changelog" "$FILE_PATH" | grep -q "^### [0-9]"; then
-                has_changelog_entries=true
-                local new_heading="### ${NEW_VERSION}"
-                local awk_with_target='/## Changelog/ { print; print ""; print heading; next } 1'
-            fi
+            local new_heading="### ${NEW_VERSION}"
+            local awk_with_target='/## Changelog/ { print; print ""; print heading; next } 1'
         else
-            # Check if there are any = version = entries after == Changelog ==
-            if grep -A 10 "^== Changelog ==" "$FILE_PATH" | grep -q "^= [0-9]"; then
-                has_changelog_entries=true
-                local new_heading="= ${NEW_VERSION} ="
-                local awk_with_target='/== Changelog ==/ { print; print ""; print heading; next } 1'
-            fi
+            local new_heading="= ${NEW_VERSION} ="
+            local awk_with_target='/== Changelog ==/ { print; print ""; print heading; next } 1'
         fi
-        
-        # Only add changelog entry if the file maintains a running changelog
-        if [[ "$has_changelog_entries" == true ]]; then
-            awk -v heading="$new_heading" "$awk_with_target" "$FILE_PATH" > tmp.md
-            mv tmp.md "$FILE_PATH"
-        else
-            echo_info "Skipping changelog entry addition - no running changelog detected in ${FILE_PATH}"
-        fi
+        awk -v heading="$new_heading" "$awk_with_target" "$FILE_PATH" > tmp.md
+        mv tmp.md "$FILE_PATH"
     else
         # if we're going FROM -dev, update the changelog.
         # TODO: do this instead/again as part of release since PR is unlikely to merge right away

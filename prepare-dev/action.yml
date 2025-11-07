@@ -2,35 +2,26 @@ name: Prepare Dev Branch
 description: Following a release, prepare the dev branch for development on the next release.
 
 inputs:
-  release_branch:
+  # All of these should be parameterized but right now are set in the bash script.
+  # release_branch:
+  #   required: false
+  #   default: "release"
+  # development_branch:
+  #   required: false
+  #   default: "main"
+  # git_author_username:
+  #   required: false
+  #   default: "bot@getpantheon.com"
+  # git_author_username:
+  #   required: false
+  #   default: "Pantheon Automation"
+  readme_md: # to avoid case sensitivty issues when getting the current version out of readme
     required: false
-    default: "release"
-    description: "The name of the release branch"
-  development_branch:
-    required: false
-    default: "main"
-    description: "The name of the development branch"
-  git_author_email:
-    required: false
-    default: "bot@getpantheon.com"
-    description: "Git author email for commits"
-  git_author_name:
-    required: false
-    default: "Pantheon Automation"
-    description: "Git author name for commits"
-  readme_md:
-    required: false
-    default: "README.md"
-    description: "The readme file to parse for version information"
+    default: "README.MD"
 
 runs:
   using: "composite"
   steps:
     - name: Update Development Branch
       shell: bash
-      env:
-        RELEASE_BRANCH: ${{ inputs.release_branch }}
-        DEVELOPMENT_BRANCH: ${{ inputs.development_branch }}
-        GIT_AUTHOR_EMAIL: ${{ inputs.git_author_email }}
-        GIT_AUTHOR_NAME: ${{ inputs.git_author_name }}
       run: bash ${{ github.action_path }}/prepare-dev.sh ${{ inputs.readme_md }}

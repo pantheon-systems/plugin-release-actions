@@ -50,46 +50,6 @@ jobs:
 ### Prepare Dev
 This action will update the development branch to be ready for the next release after releasing a new version of a plugin or module. This action search and replaces the version number across all the top-level files in the repo.
 
-To use this action, create a workflow file in your plugin or module repository (e.g. `.github/workflows/prepare-dev.yml`) with the following contents:
-
-```yaml
-name: Prepare Dev Version
-
-on:
-  push:
-    branches:
-      - release
-
-permissions:
-  contents: write
-
-jobs:
-  prepare-dev:
-    name: Prepare Development Version
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      
-      - name: Prepare development branch
-        uses: pantheon-systems/plugin-release-actions/prepare-dev@main
-        with:
-          development_branch: "main"  # or "primary" for projects that use primary
-          readme_md: "README.md"
-```
-
-#### Inputs
-
-| Name | Description | Default |
-| --- | --- | --- |
-| `release_branch` | The name of the release branch | `release` |
-| `development_branch` | The name of the development branch | `main` |
-| `git_author_email` | Git author email for commits | `bot@getpantheon.com` |
-| `git_author_name` | Git author name for commits | `Pantheon Automation` |
-| `readme_md` | The readme file to parse for version information | `README.md` |
-
 ### Release PR
 This action will draft a "ship it" PR to the `release` branch when new features are added to the development branch. This action search and replaces the version number in relevant places across all the top-level files in the repo.
 

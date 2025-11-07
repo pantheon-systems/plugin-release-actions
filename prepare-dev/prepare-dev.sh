@@ -1,5 +1,5 @@
 #!/bin/bash
-set -euo pipefail
+set -eou pipefail
 IFS=$'\n\t'
 
 if [[ "${DRY_RUN:-}" == 1 ]]; then
@@ -9,15 +9,17 @@ fi
 # shellcheck disable=SC2155
 readonly SELF_DIRNAME="$(dirname -- "$0")"
 
-# Get configuration from environment variables or use defaults
-declare -rx GIT_USER="${GIT_AUTHOR_EMAIL:-bot@getpantheon.com}"
-declare -rx GIT_NAME="${GIT_AUTHOR_NAME:-Pantheon Automation}"
+# TODO: Parameterize or make case-insensitive when this is an action
+# shellcheck disable=SC2034
+readonly GIT_USER="bot@getpantheon.com"
+# shellcheck disable=SC2034
+readonly GIT_NAME="Pantheon Automation"
 
 # shellcheck disable=SC1091
 source "${SELF_DIRNAME}/../src/functions.sh"
 
-readonly RELEASE_BRANCH="${RELEASE_BRANCH:-release}"
-readonly DEVELOP_BRANCH="${DEVELOPMENT_BRANCH:-main}"
+readonly RELEASE_BRANCH="release"
+readonly DEVELOP_BRANCH="main"
 
 main() {
     local README_MD="${1:-}"
@@ -30,11 +32,7 @@ main() {
 
     # fetch all tags and history:
     git fetch --tags --unshallow --prune
-    
-    # Set up tracking for development branch if it doesn't exist
-    if ! git show-ref --verify --quiet "refs/heads/${DEVELOP_BRANCH}"; then
-        git branch --track "${DEVELOP_BRANCH}" "origin/${DEVELOP_BRANCH}"
-    fi
+    git branch --track main origin/main
 
     git checkout "${RELEASE_BRANCH}"
     git pull origin "${RELEASE_BRANCH}"
