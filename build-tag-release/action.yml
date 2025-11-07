@@ -33,14 +33,6 @@ inputs:
     description: "Use GitHub's generated release notes"
     required: false
     default: false
-  prerelease:
-    description: "Create a prerelease instead of a regular release."
-    required: false
-    default: "false"
-  main_plugin_file:
-    description: "The main plugin file to use for prerelease edits."
-    required: false
-    default: ""
 
 runs:
   using: "composite"
@@ -77,22 +69,6 @@ runs:
         [[ "$VERSION" != "" ]] || exit 1
         echo "VERSION=$VERSION" >> $GITHUB_ENV
 
-    - name: Add prerelease details
-      if: ${{ inputs.prerelease == 'true' }}
-      shell: bash
-      run: |
-        if [[ -z "${{ inputs.main_plugin_file }}" ]]; then
-          echo "No main plugin file specified for prerelease edits."
-          exit 1
-        fi
-        [[ "$VERSION" != "" ]] || exit 0
-        OLD_VERSION="$VERSION"
-        NEW_VERSION="${VERSION}-${GITHUB_SHA::7}"
-        source ${{ github.action_path }}/../src/functions.sh
-        process_file "${{ inputs.main_plugin_file }}" "$OLD_VERSION" "$NEW_VERSION"
-        git add "${{ inputs.main_plugin_file }}"
-        echo "VERSION=$NEW_VERSION" >> $GITHUB_ENV
-
     - name: Commit Assets
       shell: bash
       if: ${{ inputs.build_node_assets == 'true' || inputs.build_composer_assets == 'true' }}
@@ -104,7 +80,6 @@ runs:
         [[ ${{ inputs.build_node_assets }} == "true" ]] && git add -f assets/*
         [[ ${{ inputs.build_composer_assets }} == "true" ]] && git add -f vendor/*
         git commit -m "Release $VERSION"
-
 
     - name: Tag
       shell: bash
@@ -121,7 +96,7 @@ runs:
       shell: bash
       run: |
         node ${{ github.action_path }}/../scripts/get_release_notes.js ./${{ inputs.readme_md }} >> ./release_notes.md
-        gh release create $VERSION --title "$VERSION" -F ./release_notes.md $([[ ${{ inputs.draft }} == "true" ]] && echo "--draft")  $([[ ${{ inputs.prerelease }} == "true" ]] && echo "--prerelease")
+        gh release create $VERSION --title "$VERSION" -F ./release_notes.md $([[ ${{ inputs.draft }} == "true" ]] && echo "--draft")
       env:
         GH_TOKEN: ${{ inputs.gh_token }}
 
@@ -129,6 +104,6 @@ runs:
       if: ${{ inputs.generate_release_notes == 'true' }}
       shell: bash
       run: |
-        gh release create $VERSION --title "$VERSION" --generate-notes --verify-tag $([[ ${{ inputs.draft }} == "true" ]] && echo "--draft") $([[ ${{ inputs.prerelease }} == "true" ]] && echo "--prerelease")
+        gh release create $VERSION --title "$VERSION" --generate-notes --verify-tag $([[ ${{ inputs.draft }} == "true" ]] && echo "--draft")
       env:
         GH_TOKEN: ${{ inputs.gh_token }}
