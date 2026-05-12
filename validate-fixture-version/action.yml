@@ -22,8 +22,9 @@ runs:
   steps:
     - name: Validate Fixture Version
       shell: bash
-      run: bash ${{ github.action_path }}/validate-fixture-version.sh
+      run: bash "$ACTION_PATH/validate-fixture-version.sh"
       env:
+        ACTION_PATH: ${{ github.action_path }}
         TERMINUS_TOKEN: ${{ inputs.terminus_token }}
         TERMINUS_SITE: ${{ inputs.terminus_site }}
         README_TXT: ${{ inputs.readme_txt }}
