@@ -4,6 +4,6 @@ test-node:
 test: test-node
 
 lint-shell:
-	shellcheck prepare-dev/*.sh src/*.sh release-pr/*.sh
+	shellcheck prepare-dev/*.sh src/*.sh release-pr/*.sh validate-fixture-version/*.sh
 
 lint: lint-shell
