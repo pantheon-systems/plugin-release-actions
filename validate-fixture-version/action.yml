@@ -1,0 +1,30 @@
+name: Validate Fixture Version
+description: >
+  Validates that the plugin's readme.txt "Tested up to:" field matches
+  the current WordPress version and the version running on a Pantheon
+  Terminus dev fixture environment.
+
+inputs:
+  terminus_token:
+    description: "Pantheon machine token for Terminus authentication. Not required if Terminus is already authenticated."
+    required: false
+    default: ""
+  terminus_site:
+    description: "The Pantheon site machine name to use as the WordPress fixture environment."
+    required: true
+  readme_txt:
+    description: "Path to the plugin's readme.txt file, relative to the repository root."
+    required: false
+    default: "readme.txt"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Validate Fixture Version
+      shell: bash
+      run: bash "$ACTION_PATH/validate-fixture-version.sh"
+      env:
+        ACTION_PATH: ${{ github.action_path }}
+        TERMINUS_TOKEN: ${{ inputs.terminus_token }}
+        TERMINUS_SITE: ${{ inputs.terminus_site }}
+        README_TXT: ${{ inputs.readme_txt }}

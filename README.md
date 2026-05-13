@@ -55,5 +55,25 @@ This action will draft a "ship it" PR to the `release` branch when new features 
 
 This action expects to make use of the label "automation" on the repo. Create it if it does not already exist.
 
+### Validate Fixture Version
+
+This action validates that the plugin's `readme.txt` `Tested up to:` field matches the current WordPress version published on WP.org, as well as the WordPress version running on a Pantheon Terminus `.dev` fixture environment. If the fixture is behind the current WordPress version, the action applies upstream updates automatically before validating.
+
+```yaml
+- name: Validate Fixture Version
+  uses: pantheon-systems/plugin-release-actions/validate-fixture-version@main
+  with:
+    terminus_token: ${{ secrets.TERMINUS_MACHINE_TOKEN }}
+    terminus_site: my-pantheon-site
+```
+
+#### Inputs
+
+| Name | Description | Required | Default |
+| --- | --- | --- | --- |
+| `terminus_token` | Pantheon machine token for Terminus authentication. Not required if Terminus is already authenticated in a prior step. | No | |
+| `terminus_site` | The Pantheon site machine name to use as the WordPress fixture environment. | Yes | |
+| `readme_txt` | Path to the plugin's `readme.txt`, relative to the repository root. | No | `readme.txt` |
+
 ## Merging Commits
 _TBD explain why features should be squashed and releases must be merged._
