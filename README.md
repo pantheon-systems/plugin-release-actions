@@ -57,7 +57,7 @@ This action expects to make use of the label "automation" on the repo. Create it
 
 ### Validate Fixture Version
 
-This action validates that the plugin's `readme.txt` `Tested up to:` field matches the current WordPress version published on WP.org, as well as the WordPress version running on a Pantheon Terminus `.dev` fixture environment. If the fixture is behind the current WordPress version, the action applies upstream updates automatically before validating.
+This action validates that the plugin's `readme.txt` `Tested up to:` field matches the current WordPress version published on WP.org, as well as the WordPress version running on a Pantheon Terminus `.dev` fixture environment. Patch versions are ignored during comparison (e.g. `Tested up to: 6.9` will match WP `6.9.4`). If the fixture is behind the current WordPress version, the action applies upstream updates automatically before validating.
 
 ```yaml
 - name: Validate Fixture Version

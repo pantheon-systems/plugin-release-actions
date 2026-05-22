@@ -2,6 +2,10 @@
 set -euo pipefail
 IFS=$'\n\t'
 
+trim_patch_version() {
+    echo "$1" | awk -F. '{print $1"."$2}'
+}
+
 main() {
     export TERMINUS_HIDE_GIT_MODE_WARNING=1
 
@@ -44,35 +48,40 @@ main() {
         terminus upstream:updates:apply --site="${TERMINUS_SITE}" --env=dev --accept-upstream --updatedb
     fi
 
+    local CURRENT_WP_VERSION_TRIMMED
+    CURRENT_WP_VERSION_TRIMMED=$(trim_patch_version "${CURRENT_WP_VERSION}")
+    local FIXTURE_VERSION_TRIMMED
+    FIXTURE_VERSION_TRIMMED=$(trim_patch_version "${FIXTURE_VERSION}")
+
     local WP_VERSION_COMPARE
-    WP_VERSION_COMPARE=$(php -r "echo version_compare('${TESTED_UP_TO}', '${CURRENT_WP_VERSION}');")
+    WP_VERSION_COMPARE=$(php -r "echo version_compare('${TESTED_UP_TO}', '${CURRENT_WP_VERSION_TRIMMED}');")
 
     if [[ "${WP_VERSION_COMPARE}" == "0" ]]; then
-        echo "Tested Up To: ${TESTED_UP_TO} matches Current WordPress Version: ${CURRENT_WP_VERSION}"
+        echo "Tested Up To: ${TESTED_UP_TO} matches Current WordPress Version: ${CURRENT_WP_VERSION} (trimmed: ${CURRENT_WP_VERSION_TRIMMED})"
     elif [[ "${WP_VERSION_COMPARE}" == "1" ]]; then
         echo "Tested Up To: ${TESTED_UP_TO} is greater than Current WordPress Version: ${CURRENT_WP_VERSION}"
     else
-        echo "Tested Up To: ${TESTED_UP_TO} does not match Current WordPress Version: ${CURRENT_WP_VERSION}"
-        echo "Please update ${TESTED_UP_TO} to ${CURRENT_WP_VERSION}"
+        echo "Tested Up To: ${TESTED_UP_TO} does not match Current WordPress Version: ${CURRENT_WP_VERSION} (trimmed: ${CURRENT_WP_VERSION_TRIMMED})"
+        echo "Please update ${TESTED_UP_TO} to ${CURRENT_WP_VERSION_TRIMMED}"
         exit 1
     fi
 
     local VERSION_COMPARE
-    VERSION_COMPARE=$(php -r "echo version_compare('${TESTED_UP_TO}', '${FIXTURE_VERSION}');")
+    VERSION_COMPARE=$(php -r "echo version_compare('${TESTED_UP_TO}', '${FIXTURE_VERSION_TRIMMED}');")
 
     if [[ "${VERSION_COMPARE}" == "0" ]]; then
-        echo "Tested Up To: ${TESTED_UP_TO} matches Fixture Version: ${FIXTURE_VERSION}"
+        echo "Tested Up To: ${TESTED_UP_TO} matches Fixture Version: ${FIXTURE_VERSION} (trimmed: ${FIXTURE_VERSION_TRIMMED})"
         exit 0
     fi
 
     if [[ "${VERSION_COMPARE}" == "-1" ]]; then
-        echo "${TESTED_UP_TO} is less than ${FIXTURE_VERSION}"
-        echo "Please update ${TESTED_UP_TO} to ${FIXTURE_VERSION}"
+        echo "${TESTED_UP_TO} is less than ${FIXTURE_VERSION} (trimmed: ${FIXTURE_VERSION_TRIMMED})"
+        echo "Please update ${TESTED_UP_TO} to ${FIXTURE_VERSION_TRIMMED}"
         exit 1
     fi
 
     if [[ "${VERSION_COMPARE}" == "1" ]]; then
-        echo "${FIXTURE_VERSION} is less than ${TESTED_UP_TO}"
+        echo "${FIXTURE_VERSION} (trimmed: ${FIXTURE_VERSION_TRIMMED}) is less than ${TESTED_UP_TO}"
 
         local CURRENT_MAJOR CURRENT_MINOR
         read -r CURRENT_MAJOR CURRENT_MINOR <<<"$(echo "${CURRENT_WP_VERSION}" | awk -F. '{print $1, $2}')"
