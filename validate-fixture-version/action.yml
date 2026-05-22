@@ -1,8 +1,8 @@
 name: Validate Fixture Version
 description: >
   Validates that the plugin's readme.txt "Tested up to:" field matches
-  the current WordPress version and the version running on a Pantheon
-  Terminus dev fixture environment.
+  the current WordPress version (comparing without patch version) and the
+  version running on a Pantheon Terminus dev fixture environment.
 
 inputs:
   terminus_token:
