@@ -20,11 +20,11 @@ inputs:
   git_username:
     description: "The username to use for git commits."
     required: false
-    default: "Pantheon Automation"
+    default: "github-actions[bot]"
   git_email:
     description: "The email to use for git commits."
     required: false
-    default: "bot@getpantheon.com"
+    default: "41898282+github-actions[bot]@users.noreply.github.com"
   readme_md:
     description: "The readme file name"
     required: false
