@@ -7,9 +7,9 @@ readonly SELF_DIRNAME="$(dirname -- "$0")"
 
 # TODO: Parameterize or make case-insensitive when this is an action
 # shellcheck disable=SC2034
-readonly GIT_USER="bot@getpantheon.com"
+readonly GIT_USER="41898282+github-actions[bot]@users.noreply.github.com"
 # shellcheck disable=SC2034
-readonly GIT_NAME="Pantheon Automation"
+readonly GIT_NAME="github-actions[bot]"
 
 # shellcheck disable=SC1091
 source "${SELF_DIRNAME}/../src/functions.sh"
