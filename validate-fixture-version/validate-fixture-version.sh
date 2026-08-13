@@ -45,7 +45,7 @@ main() {
     if [[ "${FIXTURE_VERSION_COMPARE}" == "-1" ]]; then
         echo "Fixture Version: ${FIXTURE_VERSION} is less than Current WordPress Version: ${CURRENT_WP_VERSION}"
         echo "Applying upstream updates on ${TERMINUS_SITE}"
-        terminus upstream:updates:apply --site="${TERMINUS_SITE}" --env=dev --accept-upstream --updatedb
+        terminus upstream:updates:apply "${TERMINUS_SITE}.dev" --accept-upstream --updatedb
     fi
 
     local CURRENT_WP_VERSION_TRIMMED
