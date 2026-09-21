@@ -77,7 +77,7 @@ This action validates that the plugin's `readme.txt` `Tested up to:` field match
 
 ### Rename Dependabot PR
 
-Dependabot cannot put the update type in the titles it generates, so this action renames the PR from its Dependabot group name, giving titles like `Security update: 3 updates`, `Composer minor: 5 updates` or `Major update: symfony/yaml 5.0.1 to 6.0.0`. Minor and patch updates are expected to be grouped as `<ecosystem>-security` and `<ecosystem>-minor-patch`, so an ungrouped PR is treated as a major.
+Dependabot cannot put the update type in the titles it generates. This action reads the type out of the Dependabot group name and rewrites the title, giving `Security update: 3 updates`, `Composer minor: 5 updates` or `Major update: symfony/yaml 5.0.1 to 6.0.0`. It expects the groups to be named `<ecosystem>-security` and `<ecosystem>-minor-patch`; a PR in no group is a major, and a group outside that convention keeps its own name as the prefix. A title it cannot parse is left alone.
 
 ```yaml
 name: Rename Dependabot PRs

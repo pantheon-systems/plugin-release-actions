@@ -2,9 +2,6 @@
 set -euo pipefail
 IFS=$'\n\t'
 
-# Dependabot cannot put the update type in a title it generates, so the group
-# name is the only place the type appears.
-
 ecosystem_label() {
     case "$1" in
         composer)       echo "Composer" ;;
@@ -22,38 +19,32 @@ main() {
         exit 1
     fi
 
-    # The rename fires an `edited` event, which runs this again on its own output.
-    # Every title Dependabot generates carries the verb, and none of ours does.
+    # The rename fires an `edited` event, and only Dependabot's titles carry the verb.
     if [[ ! "${PR_TITLE}" =~ [Bb]ump\  ]]; then
         echo "Not a title Dependabot generated, leaving it alone: ${PR_TITLE}"
         exit 0
     fi
 
-    local PREFIX SUMMARY
-    if [[ "${PR_TITLE}" == *" group with"* ]]; then
-        local GROUP
-        GROUP=$(sed -n 's/.*the \(.*\) group with.*/\1/p' <<<"${PR_TITLE}")
-        if [[ -z "${GROUP}" ]]; then
-            echo "Could not read a group name out of: ${PR_TITLE}"
-            exit 1
-        fi
+    local GROUP PREFIX SUMMARY
+    GROUP=$(sed -n 's/.* the \([^ ]*\) group.*/\1/p' <<<"${PR_TITLE}")
 
-        case "${GROUP}" in
-            *-security)    PREFIX="Security update" ;;
-            *-minor-patch) PREFIX="$(ecosystem_label "${GROUP%-minor-patch}") minor" ;;
-            *)             PREFIX="${GROUP}" ;;
-        esac
-
-        SUMMARY=$(sed -n 's/.*with \([0-9]* update[s]*\).*/\1/p' <<<"${PR_TITLE}")
-    else
+    case "${GROUP}" in
         # Minor and patch are grouped, so an ungrouped PR is a major.
-        PREFIX="Major update"
-        SUMMARY=$(sed -E 's/^.*[Bb]ump //; s/ from / /' <<<"${PR_TITLE}")
+        "")            PREFIX="Major update" ;;
+        *-security)    PREFIX="Security update" ;;
+        *-minor-patch) PREFIX="$(ecosystem_label "${GROUP%-minor-patch}") minor" ;;
+        *)             PREFIX="${GROUP}" ;;
+    esac
+
+    # Dependabot writes "with N updates" only when a group batches two or more.
+    SUMMARY=$(sed -n 's/.*with \([0-9]* update[s]*\).*/\1/p' <<<"${PR_TITLE}")
+    if [[ -z "${SUMMARY}" ]]; then
+        SUMMARY=$(sed -E 's/^[^:]*: //; s/^[Bb]ump //; s/ in the [^ ]+ group.*$//; s/^the [^ ]+ group to /update to /; s/ from / /' <<<"${PR_TITLE}")
     fi
 
     if [[ -z "${SUMMARY}" ]]; then
-        echo "Could not read a summary out of: ${PR_TITLE}"
-        exit 1
+        echo "::notice::Title left as it is, no summary could be read out of: ${PR_TITLE}"
+        exit 0
     fi
 
     echo "Renaming to: ${PREFIX}: ${SUMMARY}"
