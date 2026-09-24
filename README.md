@@ -75,5 +75,39 @@ This action validates that the plugin's `readme.txt` `Tested up to:` field match
 | `terminus_site` | The Pantheon site machine name to use as the WordPress fixture environment. | Yes | |
 | `readme_txt` | Path to the plugin's `readme.txt`, relative to the repository root. | No | `readme.txt` |
 
+### Rename Dependabot PR
+
+Dependabot cannot put the update type in the titles it generates. This action reads the type out of the Dependabot group name and rewrites the title, giving `Security update: 3 updates`, `Composer minor: 5 updates` or `Major update: symfony/yaml 5.0.1 to 6.0.0`. It expects the groups to be named `<ecosystem>-security` and `<ecosystem>-minor-patch`; a PR in no group is a major, and a group outside that convention keeps its own name as the prefix. A title it cannot parse is left alone.
+
+```yaml
+name: Rename Dependabot PRs
+on:
+  pull_request_target:
+    types: [opened, reopened, edited]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  rename:
+    name: Rename
+    if: github.actor == 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Rename by update type
+        uses: pantheon-systems/plugin-release-actions/rename-dependabot-pr@main
+        with:
+          gh_token: ${{ secrets.GITHUB_TOKEN }}
+```
+
+`pull_request_target` is required because a Dependabot-triggered `pull_request` run gets a read-only `GITHUB_TOKEN` whatever the `permissions` block says. The action performs no checkout.
+
+#### Inputs
+
+| Name | Description | Required | Default |
+| --- | --- | --- | --- |
+| `gh_token` | GitHub token used to edit the PR title. | Yes | |
+
 ## Merging Commits
 _TBD explain why features should be squashed and releases must be merged._

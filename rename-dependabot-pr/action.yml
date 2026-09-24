@@ -1,0 +1,21 @@
+name: Rename Dependabot PR
+description: >
+  Rename a Dependabot pull request so its update type (security, minor, major)
+  is visible in the title, read from the Dependabot group name.
+
+inputs:
+  gh_token:
+    description: "The GitHub token to use for authentication."
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Rename by update type
+      shell: bash
+      run: bash "$ACTION_PATH/rename-dependabot-pr.sh"
+      env:
+        ACTION_PATH: ${{ github.action_path }}
+        GH_TOKEN: ${{ inputs.gh_token }}
+        PR_URL: ${{ github.event.pull_request.html_url }}
+        PR_TITLE: ${{ github.event.pull_request.title }}
